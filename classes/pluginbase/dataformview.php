@@ -1071,9 +1071,11 @@ class dataformview {
      * @param array $patterns array of arrays of pattern replacement pairs
      */
     protected function split_tags($patterns, $subject) {
+        foreach($patterns as &$pattern) {
+            $pattern = preg_quote($pattern, '/');
+        }
+
         $delims = implode('|', $patterns);
-        // Escape [ and ] and the pattern rule character *.
-        $delims = quotemeta($delims);
 
         $elements = preg_split("/($delims)/", $subject, null, PREG_SPLIT_DELIM_CAPTURE);
 
@@ -1219,7 +1221,7 @@ class dataformview {
         $pluginfileurl = isset($options['pluginfileurl']) ? $options['pluginfileurl'] : null;
         if ($pluginfileurl) {
             $pluginfilepath = \moodle_url::make_file_url("/pluginfile.php", "/{$this->df->context->id}/mod_dataform/content");
-            $pattern = str_replace('/', '\/', $pluginfilepath);
+            $pattern = preg_quote($pluginfilepath, '/');
             $pattern = "/$pattern\/\d+\//";
             $html = preg_replace($pattern, $pluginfileurl, $html);
         }
